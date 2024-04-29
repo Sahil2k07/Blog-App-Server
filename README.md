@@ -7,8 +7,8 @@ his/her created Blog posts. The user can also see the posts of different users.
 
 The Blog App has Authentication features
 
-- `Signup: ` signup is done through an OTP verification, which is done by sending an email to the user
-- `Login: ` login by the same email and password.
+- `Signup` signup is done through an OTP verification, which is done by sending an email to the user
+- `Login` login by the same email and password.
 
 ## Technologies Used
 
