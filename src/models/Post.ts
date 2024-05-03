@@ -5,6 +5,7 @@ interface Post extends Document {
   content: string;
   published: boolean;
   author: mongoose.Schema.Types.ObjectId;
+  createdAt: Date;
 }
 
 const postSchema = new mongoose.Schema<Post>({
@@ -25,6 +26,10 @@ const postSchema = new mongoose.Schema<Post>({
     ref: "User",
     required: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 export default mongoose.model<Post>("Post", postSchema);

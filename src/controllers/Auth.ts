@@ -47,10 +47,14 @@ export const sendOtp = async (req: Request, res: Response) => {
       specialChars: false,
     });
 
+    await Otp.deleteMany({email});
+
     const otpSave = await Otp.create({
       otp,
       email,
     });
+
+    console.log(otpSave);
 
     await mailSender(
       email,
@@ -109,17 +113,14 @@ export const signup = async (req: Request, res: Response) => {
       });
     }
 
-    // Find the most recent OTP for the email
     const response = await Otp.find({ email }).sort({ createdAt: -1 }).limit(1);
 
     if (response.length === 0) {
-      // OTP not found for the email
       return res.status(400).json({
         success: false,
         message: "No OTP found for this email, please generate the otp again",
       });
     } else if (otp !== response[0].otp) {
-      // Invalid OTP
       return res.status(400).json({
         success: false,
         message: "The OTP is not valid",

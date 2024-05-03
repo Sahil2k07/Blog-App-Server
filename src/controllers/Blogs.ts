@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import z from "zod";
 import Post from "../models/Post";
+import User from "../models/User";
 
 export const createBlog = async (req: Request, res: Response) => {
   try {
@@ -99,16 +100,16 @@ export const updateBlog = async (req: Request, res: Response) => {
 
 export const deleteBlog = async (req: Request, res: Response) => {
   try {
-    const { postId } = req.body;
+    const { id } = req.params;
 
-    if (!postId) {
+    if (!id) {
       return res.status(404).json({
         success: false,
         msg: "Please provide the id of the blog to be deleted",
       });
     }
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(id);
 
     if (!post) {
       return res.status(400).json({
@@ -117,7 +118,7 @@ export const deleteBlog = async (req: Request, res: Response) => {
       });
     }
 
-    const deletedBlog = await Post.findByIdAndDelete(postId);
+    const deletedBlog = await Post.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,
@@ -135,9 +136,16 @@ export const deleteBlog = async (req: Request, res: Response) => {
 
 export const getBlog = async (req: Request, res: Response) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
 
     const blog = await Post.findById(id).populate("author");
+
+    if(!blog){
+      return res.status(404).json({
+        success: false,
+        msg: "No such Blog exists"
+      })
+    }
 
     return res.status(200).json({
       success: true,
@@ -170,3 +178,32 @@ export const getAllBlogs = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUserBlogs = async (req: Request, res: Response) => {
+  try {
+    const id = req.user.id;
+
+    const user = await User.findById(id);
+
+    if(!user) {
+      return res.status(400).json({
+        success: false,
+        msg: "User not found"
+      })
+    }
+
+    const posts = await Post.find({author: id}).populate("author");
+
+    return res.status(200).json({
+      success: true,
+      msg: "Blogs got successfully",
+      data: posts,
+    })
+  }catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: "Something Went Wrong while getting Blogs",
+      error,
+    })
+  }
+}
