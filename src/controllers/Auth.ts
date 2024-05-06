@@ -47,14 +47,12 @@ export const sendOtp = async (req: Request, res: Response) => {
       specialChars: false,
     });
 
-    await Otp.deleteMany({email});
+    await Otp.deleteMany({ email });
 
     const otpSave = await Otp.create({
       otp,
       email,
     });
-
-    console.log(otpSave);
 
     await mailSender(
       email,
